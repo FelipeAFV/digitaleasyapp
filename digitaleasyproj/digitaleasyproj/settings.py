@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-^$6sc)s7z)b)ea=pf*%lbr2blo!v35cirehst4$0lo72*v@c=g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['localhost','127.0.0.1']
 
 
 # Application definition
@@ -86,7 +86,7 @@ WSGI_APPLICATION = 'digitaleasyproj.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'mysql.connector.django',
         'NAME': 'heroku_96bfaaa0197a867',
         'USER': 'b232cdac91d441',
         'PASSWORD': 'ce31fee5',
@@ -130,7 +130,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'static/'
+
+## Url prefix para el manejo de static y media por la app de django
+STATIC_URL = 'static/static/'
+MEDIA_URL = 'static/media/'
+
+## Directorios del contenedor, es decir, file system donde se almacenaran los archivos
+MEDIA_ROOT = '/vol/web/media'
+STATIC_ROOT = '/vol/web/static'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

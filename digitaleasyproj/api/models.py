@@ -14,3 +14,6 @@ class NewClientData(models.Model):
 
     class Meta:
         db_table = 'new_client_data'
+
+class Sample(models.Model):
+    attachment = models.FileField()
