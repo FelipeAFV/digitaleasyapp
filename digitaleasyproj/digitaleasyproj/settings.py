@@ -146,7 +146,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/login'
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000", 'http://127.0.0.0.1', 'https://127.0.0.0.1']
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", 'http://127.0.0.0.1', 'https://127.0.0.0.1','http://app.digitaleasy.cl','https://app.digitaleasy.cl']
 
 #CORS_ALLOWED_ORIGIN_REGEXES = ['*']
 
