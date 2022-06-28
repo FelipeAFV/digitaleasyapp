@@ -14,25 +14,33 @@ def hello(request):
     return Response('Hello')
 
 
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def deleteClient(request, id):
+    try:
+        newClientToDelete = NewClientData.objects.get(id=int(id))
+        newClientToDelete.delete()
+        return Response('Client deleted')
+    except Exception:
+
+        return Response(data='Error', status=400)
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def listAllNewClients(request):
 
     clients = list(NewClientData.objects.all())
 
-    print('Lista de clientes',clients)
     clients_res_data = ''
-    print('Data', clients_res_data)
 
-
-    print(clients)
     res = {
         'message': '',
         'data': ''
     }
-    print('All clients ', clients)
 
-    if (len(clients) == 0):
+    if len(clients) == 0:
         res['message'] = 'No hay clientes nuevos'
     else:
         clients_serializer = NewClientSerializer(clients, many=True)
