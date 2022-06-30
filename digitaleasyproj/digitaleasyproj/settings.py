@@ -12,12 +12,18 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from datetime import timedelta
 from pathlib import Path
 
+import os
+import environ
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
+
+# Initialise environment variables
+env = environ.Env()
+environ.Env.read_env()
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-^$6sc)s7z)b)ea=pf*%lbr2blo!v35cirehst4$0lo72*v@c=g'
@@ -39,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'auth.apps.AuthConfig',
     'api',
+    'payments',
     'rest_framework',
     'corsheaders'
 ]
@@ -83,15 +90,20 @@ WSGI_APPLICATION = 'digitaleasyproj.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
-
 DATABASES = {
     'default': {
-        'ENGINE': 'mysql.connector.django',
-        'NAME': 'heroku_96bfaaa0197a867',
-        'USER': 'b232cdac91d441',
-        'PASSWORD': 'ce31fee5',
-        'HOST': 'us-cdbr-east-05.cleardb.net',
-        'PORT': '3306',
+        'ENGINE': os.environ.get('DBENGINE'),
+        'NAME': os.environ.get('DBNAME'),
+        'USER': os.environ.get('DBUSER'),
+        'PASSWORD': os.environ.get('DBPASSWORD'),
+        'HOST': os.environ.get('DBHOST'),
+        'PORT': os.environ.get('DBPORT'),
+        #'ENGINE': 'mysql.connector.django',
+        #'NAME': 'heroku_96bfaaa0197a867',
+        #'USER': 'b232cdac91d441',
+        #'PASSWORD': 'ce31fee5',
+        #'HOST': 'us-cdbr-east-05.cleardb.net',
+        #'PORT': '3306',
     }
 }
 

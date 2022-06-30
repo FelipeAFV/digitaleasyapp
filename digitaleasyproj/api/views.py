@@ -1,15 +1,16 @@
 from django.shortcuts import render
+import os
 from django.http import JsonResponse
 from .models import NewClientData
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny, NOT
 from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import api_view, permission_classes
 from .serializers import NewClientSerializer
 # Create your views here.
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def hello(request):
+    print(os.environ.get('MYVAR'))
     print(request.user.groups)
     return Response('Hello')
 
