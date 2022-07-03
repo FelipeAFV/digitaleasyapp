@@ -23,6 +23,7 @@ urlpatterns = [
     path('auth/', include('auth.urls')),
     path('api/', include('api.urls')),
     path('api/payments/', include('payments.urls')),
+    path('api/clients/', include('clients.urls')),
 ]
 ## devel config for django to serve static files on development
 if (settings.DEBUG):

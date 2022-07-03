@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 class Client(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    customer_name = models.CharField(max_length=50, blank=False, null=False)
+    client_name = models.CharField(max_length=50, blank=False, null=False)
 
     class Meta:
         db_table = 'clients'
