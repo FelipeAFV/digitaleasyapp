@@ -6,6 +6,5 @@ mysql-connector-python>=8.0.29
 uWSGI>=2.0.19.1,<2.1
 transbank-sdk>=3.0.0
 shortuuid>=1.0.9
-environ>=1.0
-wheel
+django-environ
 
