@@ -11,11 +11,7 @@ ENV APP_PORT=9000
 
 USER root
 
-RUN apk install core && \
-    apk refresh core && \
-    apk install --classic certbot && \
-    ln -s /snap/bin/certbot /usr/bin/certbot && \
-    certbot --nginx && \
+RUN apk add certbot certbot-nginx && \
     mkdir -p /vol/static && \
     chmod 755 /vol/static && \
     touch /etc/nginx/conf.d/default.conf && \
