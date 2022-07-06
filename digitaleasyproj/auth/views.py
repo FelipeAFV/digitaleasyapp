@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework.request import Request
-from django.contrib.auth.models import AnonymousUser, User
+from django.contrib.auth.models import AnonymousUser
+from api.models import User
+from clients.models import Client
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -31,7 +33,12 @@ def userData(request: Request):
     user: User = request.user
     print(type(user))
     print(user)
+    name_res = user.role
+    if user.role == User.CLIENT:
+        name_res = Client.objects.get(user_id=user.id).fullname
+
     return Response(data={
-        'firstName': user.first_name,
+        'firstName': name_res,
         'lastName': user.last_name,
+        'role': user.role
     })

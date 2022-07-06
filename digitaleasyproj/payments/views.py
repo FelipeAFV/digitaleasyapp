@@ -5,6 +5,10 @@ import datetime
 import pytz
 from transbank.common.integration_type import IntegrationType
 from rest_framework.reverse import reverse, reverse_lazy
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import permission_classes
+from api.permissions import ClientPermission
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
 from transbank.webpay.webpay_plus.transaction import Transaction, WebpayOptions, IntegrationCommerceCodes
@@ -12,6 +16,8 @@ from transbank.webpay.webpay_plus.transaction import IntegrationApiKeys
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
+from api.models import User
+from clients.models import Client
 import shortuuid
 from .models import Service, ServiceOrders
 
@@ -30,18 +36,26 @@ def createTransactionRest(request: Request):
     return Response(resp)
 
 
-@api_view(['POST', 'GET'])
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, ClientPermission])
 def createTransaction(request: Request):
+
+    # get client from request
+    user: User = request.user
+
+    client = Client.objects.get(user_id=user.id)
+    print(client.fullname)
+
     tx = Transaction(WebpayOptions(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, IntegrationType.TEST))
-    print(request.GET.get('service_id'))
     # codigo unico de orden de compra
     buy_order = shortuuid.ShortUUID().random(length=26)
 
     # session id defined by a jwt in the auth system
-    session_id = request.headers.get('Authorization') or 'session_id'
+    session_id = 'session_id'
 
     # TODO: obtener parametros de compra en el request
-    service_id = request.GET.get('service_id')
+
+    service_id = request.data['service_id']
 
     # service instance
     service = ''
@@ -62,7 +76,7 @@ def createTransaction(request: Request):
     # Creacion de orden de compra
 
     order = ServiceOrders(order_number=buy_order, session_token=session_id, ammount= ammount,
-                          date=datetime.datetime.now(tz=santiago_tz), service=service)
+                          date=datetime.datetime.now(tz=santiago_tz), service=service, client=client)
     created_order = ''
     try:
         order.save()
@@ -100,8 +114,16 @@ def commitTransaction(request):
 
         # handle errors on transaction
         if res['status'] == 'FAILED':
-            return Response('La transaccion ha fallado', status=400)
+            return render(request=request, template_name='paymentResponse.html', context={'message': 'La transaccion ha fallado'})
         else:
-            return Response('La transaccion ha sido exitosa', status=200)
-    return Response('HA ocurrido un error')
+            try:
+                order_to_update = ServiceOrders.objects.get(tx_token=token_for_commit)
+                order_to_update.approved = True
+                order_to_update.save()
+            except Service.DoesNotExist:
+                return render(request=request, template_name='paymentResponse.html', context={'message': 'Error: servicio no encontrado'})
+            except Exception:
+                return render(request=request, template_name='paymentResponse.html', context={'message': 'Error'})
+            return render(request=request, template_name='paymentResponse.html', context={'message': 'Transaccion exitosa'})
+    return render(request=request, template_name='paymentResponse.html', context={'message': 'Ha ocurrido un error'})
 

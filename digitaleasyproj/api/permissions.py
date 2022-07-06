@@ -1,8 +1,22 @@
 from rest_framework.permissions import BasePermission
+from .models import User
 
-class RolePermission(BasePermission):
-    def has_permission(self, request, view, role_name):
+class AdminPermission(BasePermission):
+    def has_permission(self, request, view):
+        if not request.user.role:
+            return False
 
-        return request.user.role_name == role_name
+        return request.user.role == User.ADMIN
+
+class ClientPermission(BasePermission):
+    def has_permission(self, request, view):
+
+        if request.user.is_superuser:
+            return True
+
+        if not request.user.role:
+            return False
+
+        return request.user.role == User.CLIENT
 
 

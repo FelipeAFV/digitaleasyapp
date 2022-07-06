@@ -7,9 +7,12 @@ from rest_framework.permissions import IsAuthenticated, AllowAny, NOT
 from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import api_view, permission_classes
 from .serializers import NewClientSerializer
+from .permissions import ClientPermission, AdminPermission
 # Create your views here.
 @api_view(['GET'])
+@permission_classes([IsAuthenticated, ClientPermission])
 def hello(request):
+    print(request.user.role)
     print(os.environ.get('MYVAR'))
     print(request.user.groups)
     return Response('Hello')
@@ -17,7 +20,7 @@ def hello(request):
 
 
 @api_view(['DELETE'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, AdminPermission])
 def deleteClient(request, id):
     try:
         newClientToDelete = NewClientData.objects.get(id=int(id))
@@ -29,7 +32,7 @@ def deleteClient(request, id):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, AdminPermission])
 def listAllNewClients(request):
 
     clients = list(NewClientData.objects.all())

@@ -4,3 +4,5 @@ djangorestframework>=3.13.1
 djangorestframework-simplejwt>=5.2.0
 mysql-connector-python
 uWSGI>=2.0.19.1,<2.1
+transbank-sdk>=3.0.0
+shortuuid
