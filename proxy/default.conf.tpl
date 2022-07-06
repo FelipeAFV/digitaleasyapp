@@ -1,7 +1,7 @@
 server {
     listen ${LISTEN_PORT};
 
-    server_name www.api.digitaleasy.cl api.digitaleasy.cl
+    server_name www.api.digitaleasy.cl api.digitaleasy.cl;
 
     location /static {
         alias /vol/static;
