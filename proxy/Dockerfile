@@ -11,7 +11,11 @@ ENV APP_PORT=9000
 
 USER root
 
-RUN mkdir -p /vol/static && \
+RUN sudo snap install core; sudo snap refresh core && \
+    sudo snap install --classic certbot && \
+    sudo ln -s /snap/bin/certbot /usr/bin/certbot && \
+    sudo certbot --nginx && \
+    mkdir -p /vol/static && \
     chmod 755 /vol/static && \
     touch /etc/nginx/conf.d/default.conf && \
     chown nginx:nginx /etc/nginx/conf.d/default.conf && \
