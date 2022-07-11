@@ -1,3 +1,5 @@
+import os
+
 from django.http import HttpResponse
 from django.shortcuts import render
 import traceback
@@ -30,6 +32,7 @@ def createTransactionRest(request: Request):
     session_id = 'sessionid'
     ammount = 22
     return_url = reverse(viewname='createTx', request=request) + '/commit'
+    print(return_url)
 
     # la respuesta genera un token que debe ser usado para cuando se confirme la transaccion
     resp = tx.create(buy_order,session_id, ammount, return_url)
@@ -45,6 +48,11 @@ def createTransaction(request: Request):
 
     client = Client.objects.get(user_id=user.id)
     print(client.fullname)
+    if os.environ.get('ENV') == 'prod':
+        return_url = reverse(viewname='createTx', request=request).replace('http','https') + 'commit'
+    else:
+        return_url = reverse(viewname='createTx', request=request) + 'commit'
+    print(return_url)
 
     tx = Transaction(WebpayOptions(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, IntegrationType.TEST))
     # codigo unico de orden de compra
@@ -67,7 +75,6 @@ def createTransaction(request: Request):
 
     ammount = service.value
 
-    return_url = reverse(viewname='createTx', request=request) + 'commit'
 
     # request válido
 

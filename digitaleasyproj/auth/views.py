@@ -32,7 +32,7 @@ def isAuthenticated(request: Request):
 def userData(request: Request):
     user: User = request.user
     print(type(user))
-    print(user)
+    print(user.role)
     name_res = user.role
     if user.role == User.CLIENT:
         name_res = Client.objects.get(user_id=user.id).fullname
