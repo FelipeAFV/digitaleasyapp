@@ -106,14 +106,15 @@ def createTransaction(request: Request):
 @api_view(['POST', 'GET'])
 def commitTransaction(request):
     tx = Transaction(WebpayOptions(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, IntegrationType.TEST))
-    buy_order = 'buyorder'
-    session_id = 'sessionid'
-    ammount = 22
     print('commiting transaction')
+    print(request.data)
     print(request.method)
+    if request.method == 'POST':
+        print('Transacction status ', tx.status(request.data['TBK_TOKEN']))
     # handle success transaction
-    if request.method == 'GET':
+    elif request.method == 'GET':
         token_for_commit = request.query_params.get(('token_ws'))
+        print('On get transaction status ', tx.status(token_for_commit))
         res = tx.commit(token_for_commit)
         print(res)
         print(type(res))

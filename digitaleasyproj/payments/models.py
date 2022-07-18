@@ -6,6 +6,7 @@ from clients.models import Client, Business
 class Service(models.Model):
     name = models.CharField(max_length=50, blank=False, null=False)
     value = models.DecimalField(max_digits=8, decimal_places=2, blank=False, null=False)
+    description = models.TextField(max_length=150)
 
     class Meta:
         db_table = 'services'

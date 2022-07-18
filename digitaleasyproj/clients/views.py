@@ -1,13 +1,15 @@
 import traceback
 
 from django.shortcuts import render
-from payments.models import Client, ServiceOrders
+from payments.models import Client, ServiceOrders, Service
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from api.permissions import ClientPermission
 from .serializers import UserSerializer, BusinessSerializer, ClientSerializer
 from api.models import User
+from payments.serializers import ServiceSerializer
+from .serializers import ServiceOrderSerializer
 
 # Create your views here.
 
@@ -55,5 +57,21 @@ def getAllActiveServicesFromClient(request):
 
     client = Client.objects.get(user_id=request.user.id)
 
-    services = ServiceOrders.objects.get(client_id=client.id)
-    return Response(200, 'Services')
+    services = ServiceOrders.objects.filter(
+        client_id=client.id)
+    print(services[0].service.name)
+    services_serialized = ServiceOrderSerializer(services, many=True)
+    print(services_serialized)
+    print(type(services_serialized))
+    return Response(status=200, data={
+        'services': services_serialized.data
+    })
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, ClientPermission])
+def getAllAvailableServices(request):
+
+    services = Service.objects.all()
+    services_serialized = ServiceSerializer(services, many=True)
+    return Response(status=200, data=services_serialized.data)
