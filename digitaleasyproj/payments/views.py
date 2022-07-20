@@ -21,7 +21,7 @@ from rest_framework.response import Response
 from api.models import User
 from clients.models import Client
 import shortuuid
-from .models import Service, ServiceOrders
+from .models import Service, ServiceOrders, CustomService
 
 
 # Create your views here.
@@ -135,3 +135,63 @@ def commitTransaction(request):
             return render(request=request, template_name='paymentResponse.html', context={'message': 'Transaccion exitosa'})
     return render(request=request, template_name='paymentResponse.html', context={'message': 'Ha ocurrido un error'})
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def payForCustomService(request):
+    token = request.data['service_token']
+    try:
+        custom_service: CustomService = CustomService.objects.get(token=token)
+        # get client from request
+        user: User = request.user
+
+        client = Client.objects.get(user_id=user.id)
+        print(client.fullname)
+        if os.environ.get('ENV') == 'prod':
+            return_url = reverse(viewname='createTx', request=request).replace('http', 'https') + 'commit'
+        else:
+            return_url = reverse(viewname='createTx', request=request) + 'commit'
+        print(return_url)
+
+        tx = Transaction(
+            WebpayOptions(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, IntegrationType.TEST))
+        # codigo unico de orden de compra
+        buy_order = shortuuid.ShortUUID().random(length=26)
+
+        # session id defined by a jwt in the auth system
+        session_id = 'session_id'
+
+        # TODO: obtener parametros de compra en el request
+
+
+
+        ammount = custom_service.value
+
+        # request válido
+
+        santiago_tz = pytz.timezone('America/Santiago')
+
+        # Creacion de orden de compra
+
+        order = ServiceOrders(order_number=buy_order, session_token=session_id, ammount=ammount,
+                              date=datetime.datetime.now(tz=santiago_tz), custom_service=custom_service, client=client)
+        created_order = ''
+        try:
+            order.save()
+        except Exception:
+            print(traceback.format_exc())
+            return Response('Error al crear orden de compra', status=400)
+
+        # la respuesta genera un token que debe ser usado para cuando se confirme la transaccion
+        resp = tx.create(buy_order, session_id, ammount, return_url)
+
+        order.tx_token = resp['token']
+        try:
+            order.save()
+        except:
+            return Response('Error al actualizar orden de compra', status=400)
+
+        return Response(resp)
+
+        return Response(status=400, data='Invalid token')
+    except CustomService.DoesNotExist:
+        return Response(status=400, data='Invalid token')

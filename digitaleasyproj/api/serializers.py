@@ -4,3 +4,4 @@ class NewClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = NewClientData
         fields ='__all__'
+

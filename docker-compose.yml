@@ -19,5 +19,7 @@ services:
       - 443:443
     volumes:
       - static-data:/vol/static
+      - ssl-certs:/etc/letsencrypt/live/api.digitaleasy.cl
 volumes:
   static-data:
+  ssl-certs:
