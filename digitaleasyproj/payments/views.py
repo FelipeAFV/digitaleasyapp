@@ -18,7 +18,7 @@ from transbank.webpay.webpay_plus.transaction import IntegrationApiKeys
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
-from api.models import User
+from auth.models import User
 from clients.models import Client
 import shortuuid
 from .models import Service, ServiceOrders, CustomService

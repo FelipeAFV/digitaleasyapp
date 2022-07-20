@@ -7,7 +7,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from api.permissions import ClientPermission
 from .serializers import UserSerializer, BusinessSerializer, ClientSerializer
-from api.models import User
+from auth.models import User
 from payments.serializers import ServiceSerializer
 from .serializers import ServiceOrderSerializer
 
