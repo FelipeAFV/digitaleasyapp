@@ -22,6 +22,10 @@ services:
     volumes:
       - static-data:/vol/static
       - ssl-certs:/etc/letsencrypt/live/api.digitaleasy.cl
+    environment:
+      - MYSQL_DATABASE=${DBNAME}
+      - MYSQL_USER=${DBUSER}
+      - MYSQL_PASSWORD=${DBPASSWORD}
   db:
     image: mysql:8.0.29
     restart: always
