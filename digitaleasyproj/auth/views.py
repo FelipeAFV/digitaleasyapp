@@ -9,7 +9,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
 
-@api_view(['POST'])
+@api_view(['POST','GET'])
 @permission_classes([IsAuthenticated])
 def isAuth(request):
     return Response(status=200)
