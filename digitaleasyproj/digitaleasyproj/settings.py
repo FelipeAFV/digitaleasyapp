@@ -93,12 +93,12 @@ WSGI_APPLICATION = 'digitaleasyproj.wsgi.application'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('DBENGINE'),
+        'ENGINE': 'mysql.connector.django',
         'NAME': os.environ.get('DBNAME'),
         'USER': os.environ.get('DBUSER'),
         'PASSWORD': os.environ.get('DBPASSWORD'),
-        'HOST': os.environ.get('DBHOST'),
-        'PORT': os.environ.get('DBPORT'),
+        'HOST': 'db',
+        'PORT': 3306,
 
         #'ENGINE': 'mysql.connector.django',
         #'NAME': 'heroku_96bfaaa0197a867',
@@ -138,7 +138,7 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)

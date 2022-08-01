@@ -5,6 +5,8 @@ services:
     build:
       context: .
     restart: always
+    depends_on:
+      - db
     volumes:
       - static-data:/vol/web
 
@@ -20,6 +22,17 @@ services:
     volumes:
       - static-data:/vol/static
       - ssl-certs:/etc/letsencrypt/live/api.digitaleasy.cl
+  db:
+    image: mysql:8.0.29
+    restart: always
+    volumes:
+      - mysql-data:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=${DBNAME}
+      - MYSQL_USER=${DBUSER}
+      - MYSQL_PASSWORD=${DBPASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DBPASSWORD}
 volumes:
   static-data:
   ssl-certs:
+  mysql-data:
