@@ -75,3 +75,21 @@ def getAllAvailableServices(request):
     services = Service.objects.all()
     services_serialized = ServiceSerializer(services, many=True)
     return Response(status=200, data=services_serialized.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, ClientPermission])
+def deleteInactiveServiceOrder(request):
+
+    service_order_id = request.data['id']
+    try:
+        service = ServiceOrders.objects.get(id=service_order_id)
+
+        if service.status == ServiceOrders.ACTIVO:
+            return Response(status=400, data='Servicio no puede ser eliminado')
+        service.delete()
+        return Response(status=200, data='Servicio eliminado')
+    except ServiceOrders.DoesNotExist:
+        return Response(status=400, data='Service Order does not exist')
+    except Exception:
+        return Response(status=400, data='Error')
+

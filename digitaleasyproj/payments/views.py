@@ -24,38 +24,26 @@ import shortuuid
 from .models import Service, ServiceOrders, CustomService
 
 
-# Create your views here.
-@api_view(['POST'])
-def createTransactionRest(request: Request):
-    tx = Transaction(WebpayOptions(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, IntegrationType.TEST))
-    buy_order = 'buyorder'
-    session_id = 'sessionid'
-    ammount = 22
-    return_url = reverse(viewname='createTx', request=request) + '/commit'
-    print(return_url)
-
-    # la respuesta genera un token que debe ser usado para cuando se confirme la transaccion
-    resp = tx.create(buy_order,session_id, ammount, return_url)
-    return Response(resp)
-
-
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, ClientPermission])
 def createTransaction(request: Request):
 
     # get client from request
     user: User = request.user
-
     client = Client.objects.get(user_id=user.id)
-    print(client.fullname)
+
     if os.environ.get('ENV') == 'prod':
         return_url = reverse(viewname='createTx', request=request).replace('http','https') + 'commit'
     else:
         return_url = reverse(viewname='createTx', request=request) + 'commit'
     print(return_url)
 
+    # Transaction creation with Transbankcredentials
     tx = Transaction(WebpayOptions(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, IntegrationType.TEST))
-    # codigo unico de orden de compra
+
+    ## DEFINING TRANSACTION PARAMETERS
+
+    # Unique code for buying order/ service order
     buy_order = shortuuid.ShortUUID().random(length=26)
 
     # session id defined by a jwt in the auth system
@@ -83,7 +71,8 @@ def createTransaction(request: Request):
     # Creacion de orden de compra
 
     order = ServiceOrders(order_number=buy_order, session_token=session_id, ammount= ammount,
-                          date=datetime.datetime.now(tz=santiago_tz), service=service, client=client)
+                          service=service, client=client,
+                          request_date=datetime.datetime.now(tz=santiago_tz), status=ServiceOrders.NO_PROCESADO)
     created_order = ''
     try:
         order.save()
@@ -106,9 +95,7 @@ def createTransaction(request: Request):
 @api_view(['POST', 'GET'])
 def commitTransaction(request):
     tx = Transaction(WebpayOptions(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, IntegrationType.TEST))
-    print('commiting transaction')
-    print(request.data)
-    print(request.method)
+    santiago_tz = pytz.timezone('America/Santiago')
     if request.method == 'POST':
         print('Transacction status ', tx.status(request.data['TBK_TOKEN']))
     # handle success transaction
@@ -116,8 +103,6 @@ def commitTransaction(request):
         token_for_commit = request.query_params.get(('token_ws'))
         print('On get transaction status ', tx.status(token_for_commit))
         res = tx.commit(token_for_commit)
-        print(res)
-        print(type(res))
         res = dict(res)
 
         # handle errors on transaction
@@ -126,7 +111,12 @@ def commitTransaction(request):
         else:
             try:
                 order_to_update = ServiceOrders.objects.get(tx_token=token_for_commit)
-                order_to_update.approved = True
+                order_to_update.status = ServiceOrders.ACTIVO
+                order_to_update.first_purchase_date = datetime.datetime.now(tz=santiago_tz)
+                order_to_update.last_purchase_date = datetime.datetime.now(tz=santiago_tz)
+                expiration_date = datetime.datetime.now(tz=santiago_tz)
+                expiration_date = expiration_date.replace(year=expiration_date.year+1)
+                order_to_update.expiration_date = expiration_date
                 order_to_update.save()
             except Service.DoesNotExist:
                 return render(request=request, template_name='paymentResponse.html', context={'message': 'Error: servicio no encontrado'})
@@ -173,7 +163,8 @@ def payForCustomService(request):
         # Creacion de orden de compra
 
         order = ServiceOrders(order_number=buy_order, session_token=session_id, ammount=ammount,
-                              date=datetime.datetime.now(tz=santiago_tz), custom_service=custom_service, client=client)
+                              date=datetime.datetime.now(tz=santiago_tz), custom_service=custom_service, client=client,
+                              status=ServiceOrders.NO_PROCESADO)
         created_order = ''
         try:
             order.save()
@@ -192,6 +183,5 @@ def payForCustomService(request):
 
         return Response(resp)
 
-        return Response(status=400, data='Invalid token')
     except CustomService.DoesNotExist:
         return Response(status=400, data='Invalid token')

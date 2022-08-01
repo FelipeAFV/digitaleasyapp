@@ -35,9 +35,18 @@ class ServiceOrderSerializer(serializers.ModelSerializer):
 
     service = serializers.SerializerMethodField(read_only=True)
 
+    status = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
 
         model = ServiceOrders
-        fields = ['order_number','ammount','date','service']
+        fields = ['id','order_number','ammount','last_purchase_date','expiration_date','service', 'status']
     def get_service(self, obj: ServiceOrders):
         return obj.service.name
+
+    def get_status(self, obj):
+        for stat in ServiceOrders.status_choices:
+            if stat[0] == obj.status:
+                return stat[1]
+
+        return 'No definido'
