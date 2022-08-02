@@ -10,4 +10,4 @@ python manage.py migrate
 python manage.py collectstatic --noinput
 
 # Start wsgi server on port 9000
-uwsgi --socket :9000 --workers 4 --master --enable-threads --module  digitaleasyproj.wsgi
+uwsgi --socket :8000 --workers 4 --master --enable-threads --module  digitaleasyproj.wsgi
