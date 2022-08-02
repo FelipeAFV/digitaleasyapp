@@ -12,22 +12,22 @@ services:
     volumes:
       - static-data:/vol/web
 
-#  proxy:
-#    build:
-#      context: ./proxy
-#    restart: always
-#    depends_on:
-#      - app
-#    ports:
-#      - 80:80
-#      - 443:443
-#    volumes:
-#      - static-data:/vol/static
-#      - ssl-certs:/etc/letsencrypt/live/api.digitaleasy.cl
-#    environment:
-#      - MYSQL_DATABASE=${DBNAME}
-#      - MYSQL_USER=${DBUSER}
-#      - MYSQL_PASSWORD=${DBPASSWORD}
+  proxy:
+    build:
+      context: ./proxy
+    restart: always
+    depends_on:
+      - app
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - static-data:/vol/static
+      - ssl-certs:/etc/letsencrypt/live/api.digitaleasy.cl
+    environment:
+      - MYSQL_DATABASE=${DBNAME}
+      - MYSQL_USER=${DBUSER}
+      - MYSQL_PASSWORD=${DBPASSWORD}
   db:
     image: mysql:8.0.29
     restart: always

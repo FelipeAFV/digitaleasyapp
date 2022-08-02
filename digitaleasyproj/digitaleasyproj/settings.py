@@ -91,23 +91,44 @@ WSGI_APPLICATION = 'digitaleasyproj.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
-DATABASES = {
-    'default': {
-        'ENGINE': 'mysql.connector.django',
-        'NAME': os.environ.get('DBNAME'),
-        'USER': os.environ.get('DBUSER'),
-        'PASSWORD': os.environ.get('DBPASSWORD'),
-        'HOST': 'db',
-        'PORT': 3306,
+if (os.environ.get('ENV') == 'PROD'):
 
-        #'ENGINE': 'mysql.connector.django',
-        #'NAME': 'heroku_96bfaaa0197a867',
-        #'USER': 'b232cdac91d441',
-        #'PASSWORD': 'ce31fee5',
-        #'HOST': 'us-cdbr-east-05.cleardb.net',
-        #'PORT': '3306',
+    DATABASES = {
+        'default': {
+            'ENGINE': 'mysql.connector.django',
+            'NAME': os.environ.get('DBNAME'),
+            'USER': os.environ.get('DBUSER'),
+            'PASSWORD': os.environ.get('DBPASSWORD'),
+            'HOST': 'db',
+            'PORT': 3306,
+
+            #'ENGINE': 'mysql.connector.django',
+            #'NAME': 'heroku_96bfaaa0197a867',
+            #'USER': 'b232cdac91d441',
+            #'PASSWORD': 'ce31fee5',
+            #'HOST': 'us-cdbr-east-05.cleardb.net',
+            #'PORT': '3306',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'mysql.connector.django',
+            'NAME': 'digitaleasyapp_devel',
+            'USER': 'root',
+            'PASSWORD': '',
+            'HOST': 'localhost',
+            'PORT': 3306,
+
+            # 'ENGINE': 'mysql.connector.django',
+            # 'NAME': 'heroku_96bfaaa0197a867',
+            # 'USER': 'b232cdac91d441',
+            # 'PASSWORD': 'ce31fee5',
+            # 'HOST': 'us-cdbr-east-05.cleardb.net',
+            # 'PORT': '3306',
+        }
+    }
+
 
 
 # Password validation

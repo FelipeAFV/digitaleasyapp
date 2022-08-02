@@ -85,7 +85,7 @@ def deleteInactiveServiceOrder(request):
         service = ServiceOrders.objects.get(id=service_order_id)
 
         if service.status == ServiceOrders.ACTIVO:
-            return Response(status=400, data='Servicio no puede ser eliminado')
+            return Response(status=400, data='Servicio no puede ser eliminado   ')
         service.delete()
         return Response(status=200, data='Servicio eliminado')
     except ServiceOrders.DoesNotExist:
