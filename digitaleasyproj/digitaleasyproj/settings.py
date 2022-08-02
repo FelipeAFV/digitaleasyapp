@@ -31,7 +31,7 @@ SECRET_KEY = 'django-insecure-^$6sc)s7z)b)ea=pf*%lbr2blo!v35cirehst4$0lo72*v@c=g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1','107.21.140.172','app.digitaleasy.cl','api.digitaleasy.cl']
+ALLOWED_HOSTS = ['localhost','127.0.0.1','107.21.140.172','app.digitaleasy.cl','api.digitaleasy.cl', 'www.api.digitaleasy.cl']
 
 
 # Application definition
