@@ -10,7 +10,8 @@ services:
     depends_on:
       - db
     volumes:
-      - static-data:/vol/web
+      #- static-data:/vol/web
+      - /vol/web:/vol/web
 
   proxy:
     build:
@@ -22,7 +23,8 @@ services:
       - 80:80
       - 443:443
     volumes:
-      - static-data:/vol/static
+      #- static-data:/vol/static
+      - /vol/web:/vol/web
       - ssl-certs:/etc/letsencrypt/live/api.digitaleasy.cl
     environment:
       - MYSQL_DATABASE=${DBNAME}
@@ -39,6 +41,6 @@ services:
       - MYSQL_PASSWORD=${DBPASSWORD}
       - MYSQL_ROOT_PASSWORD=${DBPASSWORD}
 volumes:
-  static-data:
+  #static-data:
   ssl-certs:
   mysql-data:
