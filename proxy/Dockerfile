@@ -7,7 +7,7 @@ COPY ./run.sh /run.sh
 ENV LISTEN_PORT=80
 ## host name of the docker service
 ENV APP_HOST=app
-ENV APP_PORT=9000
+ENV APP_PORT=8000
 
 USER root
 
