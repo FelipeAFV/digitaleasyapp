@@ -26,7 +26,7 @@ server {
     server_name app.digitaleasy.cl www.app.digitaleasy.cl;
 
     location / {
-        try_files $uri /index.html;
+        try_files $uri $uri/ /index.html;
     }
 
 }
